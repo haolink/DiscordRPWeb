@@ -10,6 +10,7 @@ config/config.php
 *.code-workspace
 
 vendor/**
+cache/**
 
 # Local History for Visual Studio Code
 .history/
