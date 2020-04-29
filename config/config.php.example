@@ -1,0 +1,13 @@
+<?php
+$config = array(
+    'db' => array(
+        'driver' => 'mysql',
+        'host' => 'localhost',
+        'database' => 'rpbot',
+        'username' => 'rpbot',
+        'password' => 'dSOrzpMSMooLQ9Ed',
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci'
+    )
+);
+?>

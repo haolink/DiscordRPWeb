@@ -1,0 +1,13 @@
+{
+    "require": {
+        "pecee/simple-router": "4.2.0.6",
+        "illuminate/database": "^7.9",
+        "twig/twig": "^3.0",
+        "illuminate/events": "^7.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "RPWeb\\": "src/RPWeb/"
+        }
+    }
+}
