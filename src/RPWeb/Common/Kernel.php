@@ -6,6 +6,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
 use Pecee\SimpleRouter\SimpleRouter;
+use RPWeb\Twig\TwigExtensions;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -35,6 +36,13 @@ class Kernel
     private $twig;
 
     /**
+     * Configuration.
+     *
+     * @var array
+     */
+    private $config;
+
+    /**
      * Gets the kernel instance.
      *
      * @return Kernel|null
@@ -55,6 +63,8 @@ class Kernel
             throw new \Exception('Kernel already initialised.');
         }
         self::$instance = $this;
+
+        session_start();
 
         $this->capsule = new Capsule();
 
@@ -84,6 +94,33 @@ class Kernel
         $this->twig = new \Twig\Environment($loader, array(
             'cache' => $cache
         ));
+
+        $this->twig->addExtension(new TwigExtensions());
+
+        $this->config = $config;
+
+        /*if($config['enable_cache']) {
+            // Cache directory
+            $cacheDir = sys_get_temp_dir('simple-router');
+
+            // Create our new php-di container
+            $container = (new \DI\ContainerBuilder())
+                ->enableCompilation($cacheDir)
+                ->writeProxiesToFile(true, $cacheDir . '/proxies')
+                ->useAutowiring(true)
+                ->build();
+
+            // Add our container to simple-router and enable dependency injection
+            SimpleRouter::enableDependencyInjection($container);
+        } else {
+            // Create our new php-di container
+            $container = (new \DI\ContainerBuilder())
+                ->useAutowiring(true)
+                ->build();
+
+            // Add our container to simple-router and enable dependency injection
+            SimpleRouter::enableDependencyInjection($container);
+        }*/
     }
 
     /**
@@ -108,5 +145,15 @@ class Kernel
     public function getTwig() : Environment
     {
         return $this->twig;
+    }
+
+    /**
+     * Get configuration.
+     *
+     * @return array
+     */ 
+    public function getConfig() : array
+    {
+        return $this->config;
     }
 }

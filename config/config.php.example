@@ -8,6 +8,14 @@ $config = array(
         'password' => 'dSOrzpMSMooLQ9Ed',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci'
+    ),
+    'enable_cache' => true,
+    'oauth' => array(
+        'client_id' => '12345456',
+        'client_secret' => '123472389472934789',
+        'discord_auth_url' => 'https://discordapp.com/api/oauth2/authorize',
+        'discord_token_url' => 'https://discordapp.com/api/oauth2/token',
+        'discord_provider_me' => 'https://discordapp.com/api/v6/users/@me'
     )
 );
 ?>
