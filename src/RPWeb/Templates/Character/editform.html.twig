@@ -1,0 +1,45 @@
+{% extends "Layout/layout.html.twig" %}
+
+{% block title %}Character editor{% endblock %}
+
+{% block pageheadline %}Character editor{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-12">
+        <form method="post" action="{{ url('character.submit') }}" enctype="multipart/form-data">
+            {% if (errors is defined) and (errors|length > 0) %}
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Character cannot be saved!</h4>
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error|raw }}</li>
+    	                {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="charshortkey">Character shortkey</label>
+                <input type="text" class="form-control" name="shortkey" id="charshortkey" aria-describedby="charHelp" placeholder="Shortkey" value="{{ character.character_shortname }}" maxlength="16" />
+                <small id="charHelp" class="form-text text-muted">Up to 16 charcters, only latin lower-case letters and numbers.</small>
+            </div>
+            <div class="form-group">
+                <label for="charname">Character name</label>
+                <input type="text" class="form-control" name="name" id="charname" placeholder="Character name" value="{{ character.character_name }}" />
+                <small id="charHelp" class="form-text text-muted">Up to 32 characters, Discord naming restrictions apply.</small>
+            </div>
+            <div class="form-group">
+                <label for="charavatar">Avatar</label>
+                <input type="file" class="form-control-file" name="avatar" id="charavatar" />
+            </div>
+            <input type="hidden" name="id" value="{{ character.id }}" />
+            <input type="hidden" name="csrf" value="{{ csrf_token('edit-char' ~ character.id) }}" />
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="{{ url('dash.index') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

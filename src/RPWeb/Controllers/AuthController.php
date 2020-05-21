@@ -74,7 +74,7 @@ class AuthController extends Controller
     public function scope()
     {
         if(!is_null($this->getUser())) {
-            return redirect(url('index'));
+            return redirect(url('dash.index'));
         }
 
         global $_SESSION;
@@ -121,5 +121,7 @@ class AuthController extends Controller
     public function logout() 
     {
         Auth::logout();
+
+        return redirect(url('index'));
     }
 }

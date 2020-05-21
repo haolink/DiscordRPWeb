@@ -33,6 +33,11 @@ class Routes
 
         SimpleRouter::group(['middleware' => DiscordAuthMiddleware::class], function () {
             SimpleRouter::get('/dash', 'DashboardController@index')->name('dash.index');
+
+            SimpleRouter::post('/character/submit', 'CharacterController@submit')->name('character.submit');
+            SimpleRouter::get('/character/new', 'CharacterController@new')->name('character.new');            
+            SimpleRouter::get('/character/delete/{id}', 'CharacterController@delete')->name('character.delete');
+            SimpleRouter::get('/character/{id}', 'CharacterController@edit')->name('character.edit');
         });
     }
 }

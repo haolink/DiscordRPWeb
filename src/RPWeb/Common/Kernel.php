@@ -5,6 +5,7 @@ use DI\Definition\Resolver\ResolverDispatcher;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;
+use Pecee\Http\Middleware\BaseCsrfVerifier;
 use Pecee\SimpleRouter\SimpleRouter;
 use RPWeb\Twig\TwigExtensions;
 use Twig\Environment;
@@ -131,7 +132,7 @@ class Kernel
     public function start()
     {
         SimpleRouter::setDefaultNamespace('\\RPWeb\\Controllers');
-
+        
         Routes::initRoutes();
 
         SimpleRouter::start();

@@ -16,6 +16,7 @@ class TwigExtensions extends AbstractExtension
     {
         return [
             new TwigFunction('url', array($this, 'generateUrl')),
+            new TwigFunction('csrf_token', array($this, 'generateCsrf')),
         ];
     }
 
@@ -30,5 +31,16 @@ class TwigExtensions extends AbstractExtension
     public function generateUrl($routeString, $parameters = array(), $getParameters = array()) : string
     {
         return url($routeString, $parameters, $getParameters);
+    }
+
+    /**
+     * Generates a CSRF token.
+     *
+     * @param string $string
+     * @return string
+     */
+    public function generateCsrf($string) : string
+    {
+        return csrf_token($string);
     }
 }

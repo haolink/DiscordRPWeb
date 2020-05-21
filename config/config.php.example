@@ -16,6 +16,14 @@ $config = array(
         'discord_auth_url' => 'https://discordapp.com/api/oauth2/authorize',
         'discord_token_url' => 'https://discordapp.com/api/oauth2/token',
         'discord_provider_me' => 'https://discordapp.com/api/v6/users/@me'
+    ),
+    'avatar' => array(
+        'storage_path' => '',
+        'storage_url' => 'https://rpbot.gamindustri.net/avatars/
+    ),
+    'websocket' => array(
+        'enabled' => false,
+        'url' => 'ws://127.0.0.1:33773'
     )
 );
 ?>

@@ -9,6 +9,10 @@ use RPWeb\Common\DiscordUser;
 
 class Controller
 {
+    private static $COMP_MENU = array(
+        'active' => 'none'
+    );
+
     /**
      * Templatevariables.
      *
@@ -51,8 +55,13 @@ class Controller
      */
     protected function render(string $template, array $templateVariables = array()) {
         $this->addTemplateVariable('user', $this->getUser());
-
         $this->addTemplateVariables($templateVariables);
+
+        if (property_exists(get_class($this), 'MENU')) {
+            $this->addTemplateVariable('menu', static::$MENU);
+        } else {
+            $this->addTemplateVariable('menu', self::$COMP_MENU);
+        }
 
         $renderedTwig = Kernel::getInstance()->getTwig()->render($template, $this->templateVariables);
         

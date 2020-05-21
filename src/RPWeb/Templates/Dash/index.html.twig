@@ -1,10 +1,75 @@
-{% extends "Layout/base.html.twig" %}
+{% extends "Layout/layout.html.twig" %}
 
-{% block content %}
+{% block title %}My characters{% endblock %}
+
+{% block pageheadline %}My characters{% endblock %}
+
+{% block head %}
+<script type="text/javascript">
+$(function() {
+    $('a[data-delete-url]').click(function() {
+        $('#deleteLink').attr('href', $(this).attr('data-delete-url'));
+    });
+});
+</script>
+{% endblock %}
+
+{% block maincontent %}
 <div class="row">
     <div class="col-12">
-        Welcome<br />
-        <img src="{{ user.avatar }}" alt="" />
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:70px">&nbsp;</th>
+                    <th>Character name</td>
+                    <th style="width:130px">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if (characters|length > 0) %}
+                    {% for character in characters %}
+                        <tr>
+                            <td class="align-middle"><img src="{{ character.resolvedAvatarUrl }}" alt="" height="64" /></td>
+                            <td class="align-middle">{{ character.character_name }} (<span style="font-style: italic">{{ character.character_shortname }}</span>)</td>
+                            <td class="align-middle">
+                                <a href="{{ url('character.edit', { 'id': character.id }) }}" class="btn btn-info btn-sm">Edit</a> 
+                                <a href="javascript:void()" data-delete-url="{{ url('character.delete', { 'id': character.id }, { 'token': csrf_token('del_char' ~ character.id)} ) }}" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">No characters available.</td>
+                    </td>
+                {% endif %}
+            </tbody>
+        </table>
+        <div class="alert alert-secondary text-right">
+            <a href="{{ url('character.new') }}" class="btn btn-primary">Create a new character</a>
+        </div>
     </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Character deletion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete the selected character?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a href="#" class="btn btn-danger" id="deleteLink">Delete</a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

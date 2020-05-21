@@ -55,7 +55,7 @@ function input($index = null, $defaultValue = null, ...$methods)
 {
     if ($index !== null) {
         return request()->getInputHandler()->value($index, $defaultValue, ...$methods);
-    }
+    }    
 
     return request()->getInputHandler();
 }
@@ -77,14 +77,10 @@ function redirect(string $url, ?int $code = null): void
  * Get current csrf-token
  * @return string|null
  */
-function csrf_token(): ?string
+function csrf_token(string $input): ?string
 {
-    $baseVerifier = Router::router()->getCsrfVerifier();
-    if ($baseVerifier !== null) {
-        return $baseVerifier->getTokenProvider()->getToken();
-    }
-
-    return null;
+    $sessionId = session_id();
+    return sha1($sessionId . $input);
 }
 
 /**

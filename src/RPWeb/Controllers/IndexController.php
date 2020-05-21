@@ -13,6 +13,10 @@ class IndexController extends Controller
      * @return void
      */
     public function index() {
+        if(!is_null($this->getUser())) {
+            return redirect(url('dash.index'));
+        }
+        
         return $this->render('Index/index.html.twig');
     }
 }
