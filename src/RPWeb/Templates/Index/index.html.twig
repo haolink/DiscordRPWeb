@@ -1,10 +1,39 @@
-{% extends "Layout/base.html.twig" %}
+{% extends "Layout/layout.html.twig" %}
 
-{% block content %}
+{% block pageheadline %}Welcome to the RPBot intro{% endblock %}
+
+{% block headtext %}This is a bot which provides you with basic Roleplaying character abilities in Discord. Its main
+purpose is allowing you - the user - to join any server on which the bot is active, enter an RP channel and become which
+ever character you wish to play as. Configuration can either happen completely within Discord but character
+setup is also possible on this webpage if you enter the <a href="{{ url('character.index') }}">My characters</a>
+area.{% endblock %}
+
+{% block maincontent %}
 <div class="row">
-    <div class="col-12 text-center">
-        <br />
-        <a class="btn btn-primary align-content-center" href="{{ url('auth.auth') }}">Login with Discord</a>
+    <div class="col-md-4">
+        <h2>How to use</h2>
+        <p>
+            Discover how to manage this bot for your own RP style, how to set up characters and what kinds of commands
+            you can use with it.
+        </p>
+        <a class="btn btn-secondary" href="#" role="button">Command index »</a>
+    </div>
+    <div class="col-md-4">
+        <h2>Character setup</h2>
+        <p>
+            You wish to set up characters on this webpage rather than within Discord? Sure thing, point and click can
+            be significantly quicker, especially if you wish to set up multiple characters in one go.
+        </p>
+        <a class="btn btn-secondary" href="#" role="button">Character setup »</a>
+    </div>
+    <div class="col-md-4">
+        <h2>Server setup</h2>
+        <p>
+            You're a server admin and wish to add this bot to your server so that users can have RP sessions with it?
+            You wish to just privately RP and are bummed out that you cannot use this bot in DMs? Cool. Setting up your
+            own server for RPing is very easy.
+        </p>
+        <a class="btn btn-secondary" href="#" role="button">Server setup »</a>
     </div>
 </div>
 {% endblock %}

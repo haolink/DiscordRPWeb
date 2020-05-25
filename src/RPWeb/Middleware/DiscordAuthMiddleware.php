@@ -19,8 +19,11 @@ class DiscordAuthMiddleware implements IMiddleware
         $user = Auth::getUser();
 
         if($user === null) {
-            $request->setRewriteUrl(url('index'));
-            redirect(url('index'));
+            global $_SESSION;        
+            $_SESSION['redirect'] = $request->getUrl()->getOriginalUrl();
+
+            $request->setRewriteUrl(url('auth.auth'));
+            redirect(url('auth.auth'));
         }
     }
 }

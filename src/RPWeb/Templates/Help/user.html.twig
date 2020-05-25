@@ -1,0 +1,285 @@
+{% extends "Layout/layout.html.twig" %}
+
+{% set dmCommands = [
+    {
+        command: 'list',
+        syntax: 'list',
+        description: 'Shows the complete list of the characters you have already created.',
+        expl: [
+            { type: 'player', text: 'list'},
+            { type: 'bot', text:
+                'You have 2 characters:<br />
+                &nbsp;&nbsp;Shortcut         - Name<br />
+                &nbsp;&nbsp;========================================<br />
+                &nbsp;&nbsp;ash              - Ash Ketchum<br />
+                &nbsp;&nbsp;neptune          - Neptune'
+            }
+        ]
+    },
+    {
+        command: 'new',
+        syntax: 'new [shortcut] [character name]',
+        description: 'This command will create a new character and add it to your list of characters. The character will be identified by the given shortcut and will have a name of choice.',
+        expl: [
+            { type: 'player', text: 'new haruhi Haruhi Suzumiya'},
+            { type: 'bot', text: 'You\'ve successfully created Haruhi Suzumiya as a character. Their shortcut is: haruhi' }
+        ]
+    },
+    {
+        command: 'avatar',
+        syntax: 'avatar [shortcut] [avatar address]',
+        description: 'Using this command you can assign an avatar/profile picture to a given character. The bot will use this picture whenever submitting messages as your character later on.',
+        expl: [
+            { type: 'player', text: 'avatar haruhi https://anime.moe/haruhi.png'},
+            { type: 'bot', text: 'Avatar for character Haruhi Suzumiya has been successfully updated.' }
+        ]
+    },
+    {
+        command: 'default',
+        syntax: 'default [shortcut]',
+        description: 'For future RPs unless you have selected a character this will be your default character.<br />
+            <b>Note:</b> This will not change your character in running RP channels.',
+        expl: [
+            { type: 'player', text: 'default haruhi'},
+            { type: 'bot', text: 'Haruhi Suzumiya is your default character.' }
+        ]
+    },
+    {
+        command: 'nick',
+        syntax: 'nick [shortcut] [new name]',
+        description: 'Renames an existing character. Their shortcut won\'t be changed.',
+        expl: [
+            { type: 'player', text: 'nick haruhi Haruhi'},
+            { type: 'bot', text: 'You\'ve successfully renamed this character to Haruhi.' }
+        ]
+    },
+    {
+        command: 'delete',
+        syntax: 'delete [shortcut]',
+        description: 'Removes a character identified by their shortcut.',
+        expl: [
+            { type: 'player', text: 'delete haruhi'},
+            { type: 'bot', text: 'Haruhi Suzumiya has been deleted!' }
+        ]
+    },
+    {
+        command: 'ooc',
+        syntax: 'ooc [character sequence]',
+        description: 'Changes your desired OOC character sequence. This instructs the bot that in RPs with allowed OOC
+            (which is the default cause) it will not resubmit your messages if they start with those characters. By
+            default the standard OOC sequence is //. It\'s always possible to use brackets for OOCing (as in: (), [] and {}).',
+        expl: [
+            { type: 'player', text: 'ooc ||'},
+            { type: 'bot', text: 'You\'ve changed your personal OOC tag to "##".' }
+        ]
+    },
+] %}
+
+{% set rpcCommands = [
+   {
+        command: 'sw',
+        syntax: '..sw [character shortcut] ([text])',
+        description: 'Switches you to another character in this channel (or server if the server administrators opted for
+            server-wide characters). If you add a text afterwards it will also immediately send a new message using this
+            character.',
+        expl: [
+            { text: '..sw haruhi', result: 'Player character now switches to Haruhi within this channel' },
+            { text: '..sw haruhi Hello everyone', result: 'Player character switches to Haruhi and she will immediately
+                send a message with the text "Hello everyone"'}
+        ]
+   },
+   {
+        command: 'back',
+        syntax: '..back ([text])',
+        description: 'Switches back to the character you used before - and optionally submits a text as your former character.',
+        expl: [
+            { text: '..back', result: 'Player character has now switched back.' },
+            { text: '..back I\'m back, losers!', result: 'Player character switches back and the old character will immediately send out "I\'m back, lossers!"'}
+        ]
+   },
+   {
+        command: 't',
+        syntax: '..t [character shortcut] [text]',
+        description: 'Sends a message as another character but won\'t switch over permanently.',
+        expl: [
+            { text: '..t haruhi Who are you?', result: 'Haruhi will send a message with the text "Who are you?". Nothing else will happen.' }
+        ]
+   },
+   {
+        command: 'del',
+        syntax: '..del',
+        description: 'Deletes your old message. As the bot replaces your message after sending with a new virtual user,
+            the normal "Delete" functionality doesn\'t work!',
+        expl: [
+            { text: '..del', result: 'The message which was sent before is now deleted.' },            
+        ]
+   },
+   {
+        command: 'swlast',
+        syntax: '..swlast [character shortcut]',
+        description: 'This command deletes your old message - and resubmits it as another character! Use this if you
+            submitted the right message just as the wrong character. You will also switch to this character afterwards.',
+        expl: [
+            { text: '..swlast haruhi', result: 'The old message gets deleted and resubmitted as Haruhi.' },            
+        ]
+   }   
+] %}
+
+{% block pageheadline %}Command overview{% endblock %}
+
+{% block headtext %}This page will allow you to learn the different commands the bot is capable of doing. Please note
+that these are the commands for a player and not for a server administrator to set it up. These commands only work if
+a server has already been successfully set up. If you wish to set up your own server please head to the
+<a href="{{ url('help.guild') }}">Server setup help</a>.{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-12 col-xl-10">
+        <h2 id="general" class="anchor">General information</h2>
+        <p>
+            Whenever you enter a server this bot is on, the server administrators will probably have assigned channels
+            to this bot. Within these channels whenever you submit a message the bot will replace the message with a
+            message by your selected character. Within an RP channel you can use RP channel commands to switch
+            characters, delete your old message and similar things. You can also send message to the other players with
+            an Out-of-character indicator (OOC tag). This is // by default but it can be anything you want it to be. The
+            server owner can disable OOC chat for a channel so if it doesn't work, it's probably disabled.
+        </p>
+        <p>
+            First of all however you will want to set up your first character. Setting up your character and your 
+            personal settings (like your default character as well as OOC tag) is done via DMs with the bot. Open up a DM
+            session with the bot and start the initial setup. As long as you don't have any character set up the bot
+            will delete every message you send to an RP channel and instruct you to set up a character. Hence in this
+            guide we start with DM commands for initial setup.
+        </p>
+        <hr />
+        <h2 id="dm" class="anchor">DM commands</h2>
+        <p>
+            The following commands are always possible to be used whenever you are in a DM conversation with the bot.
+            Most of these commands are about setting up characters for your own use. Characters you're setting up can
+            be used on all servers the bot is on. They can only be used by you!<br /><br />
+            Each character you use will have a name which will appear in Discord later on, an avatar as well as a
+            shortcut. The shortcut is supposed to be super simple, it can only contain letters and numbers to allow
+            very quick switching between them. Actual names however can be longer and contain complex characters (They
+            are only limited by
+            <a href="https://discord.com/developers/docs/resources/user#usernames-and-nicknames">Discord's naming
+            limitations</a>).
+        </p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:120px">Command</th>
+                    <th>Syntax and Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cmd in dmCommands %}
+                    <tr>
+                        <td class="help-cmd">{{ cmd.command }}</td>                    
+                        <td>
+                            <div class="d-flex">
+                                <div class="mr-auto">
+                                    <span class="cmd-desc-syntax">Full Syntax:</span> <code>{{ cmd.syntax }}</code><br />
+                                    {{ cmd.description|raw }}
+                                </div>
+                                <div class="mt-auto d-none d-md-block cmd-ex-button">
+                                    <a class="btn btn-info btn-sm" href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmd-{{ cmd.command }}" aria-expanded="false">Show example ▾</a>
+                                </div>
+                            </div>
+                            <div class="d-md-none">
+                                <a href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmd-{{ cmd.command }}" aria-expanded="false">Show example ▾</a>
+                            </div>
+                            <div class="collapse" id="coll-cmd-{{ cmd.command }}">
+                                <hr />
+                                <div class="cmd-example-frame">
+                                    <code>
+                                        {% for line in cmd.expl %}
+                                            {% set cl = "player" %}{% set nm = "Player" %}
+                                            {% if line.type == "bot" %}
+                                                {% set cl = "bot" %}{% set nm = "RPBot" %}
+                                            {% endif %}                                        
+                                            <span class="cmd-example-{{ cl }}">{{ nm }}:</span><br />
+                                            <span class="cmd-example-text">» {{ line.text|raw }}</span><br />                                        
+                                        {% endfor %}
+                                    </code>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}            
+            </tbody>
+        </table>
+        <hr />
+        <h2 id="channel" class="anchor">RP channel commands</h2>
+        <p>
+            Once you have your characters set up you will probably want to RP in a channel. For that within a channel you
+            can still for example instruct the bot to switch to another character or similar. Whenever you submit a
+            message the bot will then delete it and replace it.
+            <div class="alert alert-danger">
+                <span class="glyphicon glyphicon-exclamation-sign" style="font-size: larger;"></span> All commands in this list are prefixed with .. . This is the default prefix the RPBot uses, a server
+                administrator can however override this. The server administrators will usually tell you the prefix of
+                the server you currently play on.
+            </div>
+            <div class="alert alert-info">
+                <span class="glyphicon glyphicon-exclamation-sign" style="font-size: larger;"></span> Within RP channels you can usually write OOC messages by starting a message with // (can be replaced
+                using the DM command above) or if you write a message encapsulated in braces. OOC messages however can
+                be disabled by the server administrators.
+            </div>
+            <div class="alert alert-success">
+                <span class="glyphicon glyphicon-exclamation-sign" style="font-size: larger;"></span> Usually your selected character will only be set for a given channel. This means that in another channel
+                you will still play as a different character. A server administrator can switch their server to a server
+                wide character. This is by default not the case.
+            </div>            
+        </p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:120px">Command</th>
+                    <th>Syntax and Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cmd in rpcCommands %}
+                    <tr>
+                        <td class="help-cmd">{{ cmd.command }}</td>                    
+                        <td>
+                            <div class="d-flex">
+                                <div class="mr-auto">
+                                    <span class="cmd-desc-syntax">Full Syntax:</span> <code>{{ cmd.syntax }}</code><br />
+                                    {{ cmd.description|raw }}
+                                </div>
+                                <div class="mt-auto d-none d-md-block cmd-ex-button">
+                                    <a class="btn btn-info btn-sm" href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmdrpc-{{ cmd.command }}" aria-expanded="false">Show example{% if (cmd.expl|length > 1) %}s{% endif %} ▾</a>
+                                </div>
+                            </div>
+                            <div class="d-md-none">
+                                <a href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmdrpc-{{ cmd.command }}" aria-expanded="false">Show example{% if (cmd.expl|length > 1) %}s{% endif %} ▾</a>
+                            </div>
+                            <div class="collapse" id="coll-cmdrpc-{{ cmd.command }}">
+                                <hr />
+                                {% for example in cmd.expl %}
+                                    <div class="cmd-example-frame">
+                                        <code>                                                                                  
+                                            <span class="cmd-example-player">Player:</span><br />
+                                            <span class="cmd-example-text">» {{ example.text|raw }}</span>
+                                            <hr />
+                                            <span class="cmd-example-text"><span class="glyphicon glyphicon-ok"></span> {{ example.result|raw }}</span>
+                                        </code>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}            
+            </tbody>
+        </table>
+    </div>
+    <nav class="d-none d-xl-block col-xl-2 bd-toc" aria-label="Secondary navigation">
+        <ul class="section-nav">
+            <li class="toc-entry"><a href="#general">General information</a></li>
+            <li class="toc-entry"><a href="#dm">DM commands</a></li>
+            <li class="toc-entry"><a href="#channel">RP Channel commands</a></li>
+        </ul>
+    </nav>
+</div>
+
+{% endblock %}

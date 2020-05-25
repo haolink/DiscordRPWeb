@@ -17,6 +17,19 @@ class CharacterController extends Controller
     );
 
     /**
+     * Index page.
+     *
+     * @return void
+     */
+    public function index() {
+        $characters = Character::where('user_id', $this->getUser()->getId())->get();
+
+        $this->addTemplateVariable('characters', $characters);
+
+        return $this->render('Character/index.html.twig');
+    }
+
+    /**
      * Creates a new character.
      *
      * @return 
@@ -34,7 +47,7 @@ class CharacterController extends Controller
     public function delete($id)
     {
         if (is_null($id)) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
@@ -42,21 +55,21 @@ class CharacterController extends Controller
         $compare = csrf_token('del_char' . $id);
 
         if ($token != $compare) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
         $char = Character::find($id);
 
         if (is_null($char) || $char->user_id != $this->getUser()->getId()) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
         $char->delete();
         $this->signalWebsocketChange($this->getUser()->getId());
         
-        redirect(url('dash.index'));
+        redirect(url('character.index'));
     }
 
     /**
@@ -68,7 +81,7 @@ class CharacterController extends Controller
     public function edit($id)
     {
         if (is_null($id)) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
@@ -88,11 +101,11 @@ class CharacterController extends Controller
             } else {
                 $char = Character::find($charId);
                 if (is_null($char)) {
-                    redirect(url('dash.index'));
+                    redirect(url('character.index'));
                     return;
                 }
                 if ($char->user_id != $this->getUser()->getId()) {
-                    redirect(url('dash.index'));
+                    redirect(url('character.index'));
                     return;
                 }
             }
@@ -133,13 +146,13 @@ class CharacterController extends Controller
         }
 
         if (is_null($id) || is_null($csrf)) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
         $token = csrf_token('edit-char' . $id);
         if ($csrf != $token) {
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
 
@@ -157,7 +170,7 @@ class CharacterController extends Controller
             $char = Character::find($id);
 
             if($char->user_id != $this->getUser()->getId()) {
-                redirect(url('dash.index'));
+                redirect(url('character.index'));
                 return;
             }
 
@@ -232,7 +245,7 @@ class CharacterController extends Controller
 
             $this->signalWebsocketChange($this->getUser()->getId());
 
-            redirect(url('dash.index'));
+            redirect(url('character.index'));
             return;
         }
         return $this->renderForm($id, $char, $validationErrors);

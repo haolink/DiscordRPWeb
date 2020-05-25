@@ -9,6 +9,7 @@
     <script type="text/javascript" src="/assets/js/bootstrap.bundle.min.js" ></script>
     <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-glyphicons.css" />
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css" />
     {% block head %}{% endblock %}
 </head>
@@ -21,14 +22,25 @@
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
+          <li class="nav-item{% if menu.active == 'index' %} active{% endif %}">
+            <a class="nav-link" href="{{ url('index') }}">Intro{% if menu.active == 'characters' %}<span class="sr-only">(current)</span>{% endif %}</a>
+          </li>
+          <li class="nav-item dropdown{% if menu.active == 'help' %} active{% endif %}">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="dropdown-help" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Help{% if menu.active == 'help' %}<span class="sr-only">(current)</span>{% endif %}</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown-help">              
+              <a class="dropdown-item" href="{{ url('help.user') }}">User guide</a>
+              <a class="dropdown-item" href="{{ url('help.guild') }}">Server setup</a>
+              <a class="dropdown-item" href="{{ url('help.faq') }}">FAQ</a>
+            </div>
+          </li>
           <li class="nav-item{% if menu.active == 'characters' %} active{% endif %}">
-            <a class="nav-link" href="{{ url('dash.index') }}">My Characters<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{{ url('character.index') }}">My Characters{% if menu.active == 'characters' %}<span class="sr-only">(current)</span>{% endif %}</a>
           </li>
         </ul>
         <ul class="navbar-nav ml-md-auto">
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown01">
+            <a class="nav-link dropdown-toggle" href="javascript:void(0)" id="dropdown-profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Profile</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-profile">
               {#<a class="dropdown-item" href="#">Personal settings</a>#}
               <a class="dropdown-item" href="{{ url('auth.logout') }}">Logout</a>
             </div>
@@ -36,22 +48,29 @@
         </ul>
       </div>
     </nav>
-
-    <main role="main" class="container">
-        <div class="alert alert-dark">
-            <div class="row h-100 d-flex">
+    <main role="main">
+      <div class="jumbotron">
+        <div class="container">
+          <div class="row h-100 d-flex">
+              {% if (user is not null) and (showAvatar is defined) %}
                 <div class="col-md-3 col-lg-2 d-none d-md-block justify-content-center align-self-center text-center">
                     <img src="{{ user.avatar }}" alt="" />
                     <span style="font-size: 0.8em; font-weight: bold"><br />{{ user.username }}#{{user.discriminator}}</span>
                 </div>
                 <div class="col-sm-9 col-lg-10 text-center mx-auto justify-content-center align-self-center">
-                    <h1>{% block pageheadline %}My characters{% endblock %}</h1>
+              {% else %}
+                <div class="col-12 text-center mx-auto justify-content-center align-self-center">
+              {% endif %}
+                  <h1 class="display-3">{% block pageheadline %}My characters{% endblock %}</h1>
+                  {% block headtext %}{% endblock %}
                 </div>
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="container">
         {% block maincontent %}{% endblock %}
+      </div>
     </main>
-
 {% block footer %}{% endblock %}    
 </body>
 </html>

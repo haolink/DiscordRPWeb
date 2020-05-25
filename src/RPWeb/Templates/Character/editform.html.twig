@@ -38,7 +38,7 @@
             <input type="hidden" name="id" value="{{ character.id }}" />
             <input type="hidden" name="csrf" value="{{ csrf_token('edit-char' ~ character.id) }}" />
             <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="{{ url('dash.index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ url('character.index') }}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>

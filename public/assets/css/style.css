@@ -1,7 +1,83 @@
 body {
-  padding-top: 5rem;
+  padding-top: 3.5rem;
 }
 .base-template {
   padding: 3rem 1.5rem;
   text-align: center;
+}
+
+.bd-toc {
+  position: sticky;
+  top: 3rem;
+  height: calc(100vh - 3rem);
+  overflow-y: auto;
+  order: 2;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  font-size: .875rem;
+}
+
+.section-nav {
+  padding-left: 0;
+  border-left: 1px solid #eee;
+}
+.section-nav ul {
+  padding-left: 1rem;
+}
+
+.toc-entry {
+  display: block;
+}
+.toc-entry a {
+  display: block;
+  padding: .125rem 1.5rem;
+  color: #77757a;
+}
+
+.toc-entry a:hover {
+  color: #0000FF;
+  text-decoration: none;
+}
+
+td.help-cmd {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+div.cmd-example-frame {
+  background-color: sandybrown;
+  border: 1px solid darkblue;
+  border-radius: 5px;
+  padding: 3px;
+  margin-bottom: 3px;
+}
+
+code .cmd-example-player {
+  font-weight: bold;
+  color: black;
+}
+code .cmd-example-bot {
+  font-weight: bold;
+  color: purple;
+}
+code .cmd-example-text {
+  font-style: italic;
+  color: #3F3F3F;
+}
+
+.cmd-desc-syntax {
+  font-style: italic;
+  color: #3F3F3F;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.cmd-ex-button {
+  padding-left: 8px;
+}
+
+h2.anchor:before {
+  display:block;
+  height: 6rem;
+  margin-top: -6rem;
+  content: "";
 }

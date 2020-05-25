@@ -31,13 +31,17 @@ class Routes
         SimpleRouter::get('/auth/scope', 'AuthController@scope')->name('auth.scope');
         SimpleRouter::get('/logout', 'AuthController@logout')->name('auth.logout');
 
+        SimpleRouter::get('/help/user', 'HelpController@help', array('parameters' => ['helpPage' => 'user']))->name('help.user');
+        SimpleRouter::get('/help/server', 'HelpController@help', array('parameters' => ['helpPage' => 'guild']))->name('help.guild');
+        SimpleRouter::get('/help/faq', 'HelpController@help', array('parameters' => ['helpPage' => 'faq']))->name('help.faq');
+        
         SimpleRouter::group(['middleware' => DiscordAuthMiddleware::class], function () {
-            SimpleRouter::get('/dash', 'DashboardController@index')->name('dash.index');
+            SimpleRouter::get('/characters', 'CharacterController@index')->name('character.index');
 
-            SimpleRouter::post('/character/submit', 'CharacterController@submit')->name('character.submit');
-            SimpleRouter::get('/character/new', 'CharacterController@new')->name('character.new');            
-            SimpleRouter::get('/character/delete/{id}', 'CharacterController@delete')->name('character.delete');
-            SimpleRouter::get('/character/{id}', 'CharacterController@edit')->name('character.edit');
+            SimpleRouter::post('/characters/submit', 'CharacterController@submit')->name('character.submit');
+            SimpleRouter::get('/characters/new', 'CharacterController@new')->name('character.new');            
+            SimpleRouter::get('/characters/delete/{id}', 'CharacterController@delete')->name('character.delete');
+            SimpleRouter::get('/characters/{id}', 'CharacterController@edit')->name('character.edit');
         });
     }
 }

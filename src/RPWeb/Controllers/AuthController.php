@@ -74,7 +74,7 @@ class AuthController extends Controller
     public function scope()
     {
         if(!is_null($this->getUser())) {
-            return redirect(url('dash.index'));
+            return redirect(url('character.index'));
         }
 
         global $_SESSION;
@@ -107,7 +107,16 @@ class AuthController extends Controller
 
         if (!is_null($user)) {
             Auth::login($user);
-            return redirect(url('dash.index'));
+
+            global $_SESSION;
+            if (array_key_exists('redirect', $_SESSION)) {
+                $rd = $_SESSION['redirect'];
+                unset($_SESSION['redirect']);
+            } else {
+                $rd = url('character.index');
+            }
+
+            return redirect($rd);
         } else {
             return redirect(url('index'));
         }

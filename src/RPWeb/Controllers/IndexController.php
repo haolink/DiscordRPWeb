@@ -6,17 +6,17 @@ use RPWeb\Library\Controller;
 use RPWeb\Model\User;
 
 class IndexController extends Controller
-{
+{    
+    protected static $MENU = array(
+        'active' => 'index'
+    );
+
     /**
-     * Index page.
-     *
-     * @return void
-     */
-    public function index() {
-        if(!is_null($this->getUser())) {
-            return redirect(url('dash.index'));
-        }
-        
-        return $this->render('Index/index.html.twig');
-    }
+    * Index page.
+    *
+    * @return void
+    */
+   public function index() {
+       return $this->render('Index/index.html.twig');
+   }
 }
