@@ -2,6 +2,7 @@
 
 namespace RPWeb\Twig;
 
+use RPWeb\Common\Kernel;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -16,6 +17,7 @@ class TwigExtensions extends AbstractExtension
     {
         return [
             new TwigFunction('url', array($this, 'generateUrl')),
+            new TwigFunction('config', array($this, 'getConfig')),
             new TwigFunction('csrf_token', array($this, 'generateCsrf')),
         ];
     }
@@ -42,5 +44,16 @@ class TwigExtensions extends AbstractExtension
     public function generateCsrf($string) : string
     {
         return csrf_token($string);
+    }
+
+    /**
+     * Reads the system configuration.
+     *
+     * @param string $string
+     * @return array
+     */
+    public function getConfig() : array
+    {
+        return Kernel::getInstance()->getConfig();
     }
 }

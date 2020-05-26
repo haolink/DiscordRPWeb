@@ -1,0 +1,197 @@
+{% extends "Layout/layout.html.twig" %}
+
+{% set guildCommands = [
+    {
+         command: 'sprefix',
+         syntax: 'rp!sprefix [new prefix]',
+         description: 'Changes the RP prefix for users from .. to something else.',
+         expl: [
+             { text: 'rp!sprefix --', result: 'The RPing prefix is now --' }             
+         ]
+    },
+    {
+        command: 'setup',
+        syntax: 'rp!setup',
+        description: 'Turns a channel into an RP channel. From that point on the bot will intercept all messages and
+            replace them with character messages.',
+        expl: [
+            { text: 'rp!setup', result: 'The channel is now an RP channel.' }             
+        ]
+   },
+   {
+        command: 'unset',
+        syntax: 'rp!unset',
+        description: 'Turns an RP channel back into a normal channel where users can converse.',
+        expl: [
+            { text: 'rp!unset', result: 'The channel is not an RP channel anymore.' }             
+        ]
+    },
+    {
+        command: 'ooc',
+        syntax: 'rp!ooc [on/off]',
+        description: 'Will disable or enable out-of-character (OOC) talk in the current RP channel. By default OOC
+            talk is enabled.',
+        expl: [
+            { text: 'rp!ooc off', result: 'OOC talking is now disabled.' }             
+        ]
+    },
+    {
+        command: 'charsetting',
+        syntax: 'rp!charsetting [server/channel]',
+        description: 'By default users will have different characters depending on which channel they RP in. If you wish
+            that all users on your server should have the same selected character accross all channels you can switch
+            the character setting to server. To revert to per-channel characters, switch it back to channel.',
+        expl: [
+            { text: 'rp!charsetting server', result: 'Users will now use the same character in all channels of this server.' }             
+        ]
+    },
+] %}
+
+{% block pageheadline %}Server setup{% endblock %}
+
+{% block headtext %}This is a step by step installation guide on how to set up your server for the RP bot. If you're 
+here to just use the bot for RPing then please head to the
+<a href="{{ url('help.user') }}">user guide</a>.{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-12 col-xl-10">
+        <h2 id="step-1" class="anchor">Inviting the bot to your server</h2>
+        <p>
+            First of all you need to invite the bot to your server. There's two ways. One of them is the <b>safe way</b>
+            which will require you to set up permissions for the bot for its designated channels yourself. This is
+            recommended if you have a bigger server and you wish to ensure that the bot will not be able to fiddle with
+            other channels. The other way is the <b>easy way</b> which grants the bot all the required permissions from
+            the get go. The easy way however means that if any cracker manages to hijack the bot, this bot would
+            immediately have the permissions to literally turn every channel of your server upside down and remove random messages
+            from it. <br /><br />
+            The easy way is due to this only recommended if you wish to make a quick RPing server for some friends and
+            you don't care about permissions or anything. <br /><br />
+            The invite links are:<ul>
+                <li><a href="https://discord.com/oauth2/authorize?client_id={{ config().oauth.client_id }}&permissions=67488832&scope=bot">Safe invite</a>
+                    (recommended for bigger servers)</li>
+                <li><a href="https://discord.com/oauth2/authorize?client_id={{ config().oauth.client_id }}&permissions=604367936&scope=bot">Easy invite</a>
+                    (recommended for small RP groups)</li>
+            </ul>            
+        </p>
+        <hr />
+        <h2 id="step-2" class="anchor">Server prefix preparation</h2>        
+        <p>
+            If you run a bigger server with many bots you probably will have encountered the issue that bots quite often
+            use similar command prefixes. Some bots use &quot;!&quot; to start their commands and thus having two bots
+            with the same prefixes in one server will make them conflict.
+        </p>
+        <p>
+            The RP bot uses two prefixes. By default those are &quot;rp!&quot; (for the bot management) as well as
+            &quot;..&quot; for live RPing. Commands starting with &quot;..&quot; can only be used within RP activated
+            channels. A feasable option is to disallow bots which use &quot;..&quot; from reading messages in those
+            channels so that conflicts can be avoided. However, both the &quot;rp!&quot; and the &quot;..&quot; can be
+            changed.
+        </p>
+        <p>
+            If you're fine with both prefixes - you can just skip.
+        </p>
+        <ul>
+            <li>
+                <b>Changing the management prefix (normally &quot;rp!&quot;):</b><br />
+                Write an @ message to the bot followed by <code>prefix [newprefix]</code>. A typical command could be
+                <code>@DiscordRPBot prefix moe!</code>. This would change the server prefix to &quot;moe!&quot;.
+            </li>
+            <li>
+                <b>Changing the RP prefix (normally &quot;..&quot;):</b><br />
+                Use the sprefix command (see command list below). Considering you haven't changed the server prefix,
+                then the command would be <code>rp!sprefix [new rp prefix]</code>. An example would be 
+                <code>rp!sprefix --</code>. This would change the RP prefix to &quot;--&quot;.
+            </li>
+        </ul>
+        <hr />
+        <h2 id="step-3" class="anchor">Channel preparation</h2>        
+        <p>
+            First of all: If you installed the bot to your server using the easy way, you can most likely skip this
+            step. The bot will have the required permissions by default. You can skip this point.
+        </p>
+        <p>
+            Whenever you wish to turn a channel into an RP channel you must ensure that the bot has the permissions
+            to &quot;<i>Manage Webhooks</i>&quot; on the channel as well as the permission to &quot;<i>Manage
+            Messages</i>&quot;. The reasons for these permissions are:
+            <ul>
+                <li><b>Manage Messages:</b> Whenever a user submits a message, the bot will immediately delete it to
+                resubmit it as their desired character.</li>
+                <li><b>Manage Webhooks:</b> Webhooks are a technology which allows any kind of system to push messages
+                with any user name or avatar into a Discord channel. The RP bot uses this system to seemingly resubmit
+                a message as a new user.</li>
+            </ul>
+        </p>
+        <hr />
+        <h2 id="step-4" class="anchor">Channel setup</h2>
+        <p>
+            Now that your channel permissions are set. Simply run the command <code>rp!setup</code> in a channel (or
+            use the respective server prefix rather than &quot;rp!&quot; in case you changed it) and the bot will set
+            up the channel and from this moment on take over all messages. If you missed setting up some permissions
+            the bot will complain to you in DMs. You must be an administrator or server owner to run this command.        
+        </p>
+        <p>
+            In case you want to revert a channel to normal mode: run the command <code>rp!unset</code> in the same
+            channel.
+        </p>
+        <hr />
+        <h2 id="annex" class="anchor">Annex: command overview</h2>
+        <p>There are some more commands than the one used above. This is a simple listing of possible commands.</p>
+        <div class="alert alert-danger">
+            <span class="glyphicon glyphicon-exclamation-sign" style="font-size: larger;"></span> All commands in this
+            list are prefixed with rp!. This prefix might have been changed for your server.
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width:120px">Command</th>
+                    <th>Syntax and Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cmd in guildCommands %}
+                    <tr>
+                        <td class="help-cmd">{{ cmd.command }}</td>                    
+                        <td>
+                            <div class="d-flex">
+                                <div class="mr-auto">
+                                    <span class="cmd-desc-syntax">Full Syntax:</span> <code>{{ cmd.syntax }}</code><br />
+                                    {{ cmd.description|raw }}
+                                </div>
+                                <div class="mt-auto d-none d-md-block cmd-ex-button">
+                                    <a class="btn btn-info btn-sm" href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmdrpc-{{ cmd.command }}" aria-expanded="false">Show example{% if (cmd.expl|length > 1) %}s{% endif %} ▾</a>
+                                </div>
+                            </div>
+                            <div class="d-md-none">
+                                <a href="javascript:void(0)" data-toggle="collapse" data-target="#coll-cmdrpc-{{ cmd.command }}" aria-expanded="false">Show example{% if (cmd.expl|length > 1) %}s{% endif %} ▾</a>
+                            </div>
+                            <div class="collapse" id="coll-cmdrpc-{{ cmd.command }}">
+                                <hr />
+                                {% for example in cmd.expl %}
+                                    <div class="cmd-example-frame">
+                                        <code>                                                                                  
+                                            <span class="cmd-example-player">Player:</span><br />
+                                            <span class="cmd-example-text">» {{ example.text|raw }}</span>
+                                            <hr />
+                                            <span class="cmd-example-text"><span class="glyphicon glyphicon-ok"></span> {{ example.result|raw }}</span>
+                                        </code>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}            
+            </tbody>
+        </table>
+    </div>
+    <nav class="d-none d-xl-block col-xl-2 bd-toc" aria-label="Secondary navigation">
+        <ul class="section-nav">
+            <li class="toc-entry"><a href="#step-1">Inviting the bot</a></li>
+            <li class="toc-entry"><a href="#step-2">Prefix setup</a></li>
+            <li class="toc-entry"><a href="#step-3">Channel preparations</a></li>
+            <li class="toc-entry"><a href="#step-4">Channel setup</a></li>
+            <li class="toc-entry"><a href="#annex">Command list</a></li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "Layout/layout.html.twig" %}
+
+{% block pageheadline %}FAQ{% endblock %}
+
+{% block headtext %}Got some quick questions? Hopefully we have the answers for you here.{% endblock %}
+
+{% block maincontent %}
+<div class="row">
+    <div class="col-12 col-xl-10">
+        <h3>Can I use this bot in DMs?</h3>
+        <p>
+            No, this isn't possible. There are multiple reasons which can be all summed up to &quot;Limitations of
+            Discord DMs&quot;. Some of the reasons are:
+            <ul>
+                <li>You cannot befriend a bot - so you cannot invite it into DM groups.</li>
+                <li>Even if you managed to get the bot into a DM group: The bot would be unable to use the so-called
+                    Discord webhook technology which it requires and it wouldn't be able to edit other user's messages.
+                </li>
+            </ul>
+            Long story short: It won't work.
+        </p>
+        <hr />
+        <h3>
+            As DMs don't work, is it fine to create a mini server, us the bot and then delete
+            the server after some time?
+        </h3>
+        <p>That's perfectly fine.</p>
+        <hr />
+        <h3>I kicked the bot out of my server and reinvited it. Will it remember my server?</h3>
+        <p>
+            The bot will keep all settings in its database for 28 days after being removed from a server. If you
+            readd it, it thus will remember all settings. Once 28 days have passed it will remove all information
+            about your server. At that point of time you will have to set it up again.
+        </p>
+        <hr />
+        <h3>Are the characters I've created global?</h3>
+        <p>Yes, they are. You can use them in all servers this bot is in.</p>
+        <hr />
+        <h3>Can I limit characters to specific servers or channels?</h3>
+        <p>No. Just don't use them in there.</p>
+        <hr />
+        <h3>Is there any difference between characters I made on this webpage or via Discord?</h3>
+        <p>No. Feel free to use whichever way you prefer for character setup.</p>
+        <hr />
+        <h3>I'm in a server where my characters do not work. How can that be?</h3>
+        <p>This bot is an open source project. This also means that people can make copies of the bot. If people create
+            their own copy, this copy will use its own database.
+        </p>
+        <hr />
+        <h3>An open-source project? Can I get involved?</h3>
+        <p>
+            Yes. You can fork the source code of the bot itself from 
+            <a href="https://github.com/haolink/DiscordRPBot">its GitHub project.</a> This webpage including the
+            character editor is also open-source and can be forked from 
+            <a href="https://github.com/haolink/DiscordRPWeb">the webpage GitHub project</a>. Both the webpage and the
+            bot are MIT licensed so you are free to make your own versions of it but I would encourage people to
+            contribute to the project if they have good ideas.<br />
+            Both the bot and the webpage are developed in PHP. Both of them require a functioning web server, the bot
+            needs the server to run a UNIX based operating system (Windows Subsystem for Linux will work fine though),
+            a MySQL/MariaDB based database which they share as well as ImageMagick installed on the server for avatar
+            processing.            
+        </p>
+        <hr />
+        <h3>I have ideas. Can I get in touch?</h3>
+        <p>
+            Yes, you can either <a href="https://www.twitter.com/haolink">contact me on Twitter</a> (my DMS are open) or
+            use the <a href="https://github.com/haolink/DiscordRPBot/issues">issue tracker on GitHub</a>. If you have
+            me added on Discord, feel free to note me there as well.
+        </p>
+    </div>
+</div>
+{% endblock %}
