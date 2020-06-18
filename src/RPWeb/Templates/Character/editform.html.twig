@@ -69,7 +69,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="mdd-body">
         <div class="result" id="inputImg"></div>
         <div>
             <a href="javascript:void(0)" id="zoom-in-button" style="display: inline-block; width: 30px; height: 30px; background-color:white; text-align: center; color: black; border: 1px solid black; border-right: 0px; margin: 0px;">+</a><a id="zoom-out-button" href="javascript:void(0); return false;" style="display: inline-block; width: 30px; height: 30px; background-color:white; text-align: center; color: black; border: 1px solid black; margin: 0px;">-</a>
@@ -132,9 +132,51 @@ function afterZoom() {
     $('#zoom-level').text('Dimension: ' + wdt + 'x' + wdt);
 }
 
+minWidth = -1;
+var cImg = null;
+$('#preview-modal').on('shown.bs.modal', function () {
+    width = $('#inputImg').innerWidth();        
+    genCropper(cImg, width);    
+});
+
+function genCropper(img, minWidth) {
+    result = document.querySelector('#inputImg');
+    img.height = minWidth;
+    img.width = minWidth;
+    result.append(img);
+
+    cropper = new Cropper(img, {
+        viewMode: 1,
+        dragMode: 'move',
+        aspectRatio: 1,
+        autoCropArea: 1,
+        minContainerWidth: minWidth,
+        minContainerHeight: minWidth,
+        maxContainerWidth: minWidth,
+        maxContainerHeight: minWidth,
+        center: false,
+        zoomOnWheel: true,
+        zoomOnTouch: true,
+        cropBoxMovable: false,
+        cropBoxResizable: false,
+        guides: false,
+        ready: function(event) {
+            this.cropper = cropper;
+            picZoom(0);
+        },
+        zoom: function() {
+            window.setTimeout(function() {
+                afterZoom();
+            }, 50);
+        },
+        cropend: function() {
+            afterZoom();
+        }
+    });
+    gCropper = cropper;  
+}
+
 function cropImgFunc(event) {
-    let result = document.querySelector('#inputImg'),
-    imgPreview = document.querySelector('#preImg');
     if (event.target.files.length) {
         // start file reader
         const reader = new FileReader();
@@ -147,46 +189,11 @@ function cropImgFunc(event) {
                 /*img.width = 544;
                 img.height = 370;*/
                 // clean result before
-                result.innerHTML = '';
+                document.querySelector('#inputImg').innerHTML = '';
                 // append new image
-                result.appendChild(img);
-                // init cropper
+                cImg = img;
                 $('#errorMsg').hide();
-                $('#preview-modal').modal('show');
-                cropper = new Cropper(img, {
-                    viewMode: 1,
-                    dragMode: 'move',
-                    aspectRatio: 1,
-                    autoCropArea: 1,
-                    minContainerWidth: 466,
-                    minContainerHeight: 466,
-                    center: false,
-                    zoomOnWheel: true,
-                    zoomOnTouch: true,
-                    cropBoxMovable: false,
-                    cropBoxResizable: false,
-                    guides: false,
-                    ready: function(event) {
-                        this.cropper = cropper;
-                        picZoom(0);
-                    },
-                    zoom: function() {
-                        window.setTimeout(function() {
-                            afterZoom();
-                        }, 50);
-                    },
-                    cropend: function() {
-                        afterZoom();
-                    } {# ,
-                    crop: function(event) {
-                        let imgSrc = this.cropper.getCroppedCanvas({
-                            width: 170,
-                            height: 170// input value
-                        }).toDataURL("image/png");
-                        imgPreview.src = imgSrc;
-                    } #}
-                });
-                gCropper = cropper;
+                $('#preview-modal').modal('show');                              
             }
         };
         reader.readAsDataURL(event.target.files[0]);
