@@ -5,6 +5,17 @@
 {% block pageheadline %}Character editor{% endblock %}
 
 {% block head %}
+    <script type="text/javascript" src="/assets/js/cropper.min.js" ></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/cropper.min.css" />    
+    <script type="text/javascript" src="/assets/js/jquery-ui.min.js" ></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui.min.css" />    
+
+    <style type="text/css">
+    .cropper-view-box {
+        border-radius: 50%;
+        outline: none; 
+    }
+    </style>
 {% endblock %}
 
 {% block maincontent %}
@@ -33,8 +44,11 @@
             </div>
             <div class="form-group">
                 <label for="charavatar">Avatar</label>
-                <input type="file" class="form-control-file" name="avatar" id="charavatar" />
+                <input type="file" class="form-control-file" name="avatar" id="charavatar" onchange="cropImgFunc(event)" />
             </div>
+            <input type="hidden" name="crop-x" id="crop-x" value="-1" />
+            <input type="hidden" name="crop-y" id="crop-y" value="-1" />
+            <input type="hidden" name="crop-width" id="crop-width" value="-1" />
             <input type="hidden" name="id" value="{{ character.id }}" />
             <input type="hidden" name="csrf" value="{{ csrf_token('edit-char' ~ character.id) }}" />
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -42,4 +56,141 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block footer %}
+<!-- Modal -->
+<div class="modal fade" id="preview-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Image cropping</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="result" id="inputImg"></div>
+        <div>
+            <a href="javascript:void(0)" id="zoom-in-button" style="display: inline-block; width: 30px; height: 30px; background-color:white; text-align: center; color: black; border: 1px solid black; border-right: 0px; margin: 0px;">+</a><a id="zoom-out-button" href="javascript:void(0); return false;" style="display: inline-block; width: 30px; height: 30px; background-color:white; text-align: center; color: black; border: 1px solid black; margin: 0px;">-</a>
+            <span id="zoom-level"></span>
+        </div>
+
+        {# <img class="preImg" id="preImg" src="about:blank" /> #}
+        <div id="errorMsg" style="font-weight: bold; text-align:center; color: red; display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="cancelCropping()">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="saveCropping()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+var gCropper = null;
+function cancelCropping() {
+    $('#preview-modal').modal('hide');
+    $('#charavatar')[0].value = '';
+}
+
+function saveCropping() {
+    cropData = gCropper.getData(true);
+
+    var wdt = cropData.width;
+    var x = cropData.x;
+    var y = cropData.y;
+
+    if(wdt < 128) {
+        $('#errorMsg').show();
+        $('#errorMsg').text("The selected area is too small - it must be at least 128 by 128 pixels large.");
+    } else {
+        $('#crop-x').val(x);
+        $('#crop-y').val(y);
+        $('#crop-width').val(wdt);
+
+        $('#errorMsg').hide();
+        $('#preview-modal').modal('hide');
+    }
+}
+
+$(function() {
+    $('#zoom-in-button').click(function() { picZoom(0.25); });
+    $('#zoom-out-button').click(function() { picZoom(-0.25); });
+});
+
+function picZoom(zoom) {
+    gCropper.zoom(zoom);    
+
+    return false;
+}
+
+function afterZoom() {
+    cropData = gCropper.getData(true);
+    var wdt = cropData.width;
+
+    $('#zoom-level').text('Dimension: ' + wdt + 'x' + wdt);
+}
+
+function cropImgFunc(event) {
+    let result = document.querySelector('#inputImg'),
+    imgPreview = document.querySelector('#preImg');
+    if (event.target.files.length) {
+        // start file reader
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            if(event.target.result) {
+                // create new image
+                let img = document.createElement('img');
+                img.id = 'image';
+                img.src = event.target.result;
+                /*img.width = 544;
+                img.height = 370;*/
+                // clean result before
+                result.innerHTML = '';
+                // append new image
+                result.appendChild(img);
+                // init cropper
+                $('#errorMsg').hide();
+                $('#preview-modal').modal('show');
+                cropper = new Cropper(img, {
+                    viewMode: 1,
+                    dragMode: 'move',
+                    aspectRatio: 1,
+                    autoCropArea: 1,
+                    minContainerWidth: 466,
+                    minContainerHeight: 466,
+                    center: false,
+                    zoomOnWheel: true,
+                    zoomOnTouch: true,
+                    cropBoxMovable: false,
+                    cropBoxResizable: false,
+                    guides: false,
+                    ready: function(event) {
+                        this.cropper = cropper;
+                        picZoom(0);
+                    },
+                    zoom: function() {
+                        window.setTimeout(function() {
+                            afterZoom();
+                        }, 50);
+                    },
+                    cropend: function() {
+                        afterZoom();
+                    } {# ,
+                    crop: function(event) {
+                        let imgSrc = this.cropper.getCroppedCanvas({
+                            width: 170,
+                            height: 170// input value
+                        }).toDataURL("image/png");
+                        imgPreview.src = imgSrc;
+                    } #}
+                });
+                gCropper = cropper;
+            }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+</script>
 {% endblock %}

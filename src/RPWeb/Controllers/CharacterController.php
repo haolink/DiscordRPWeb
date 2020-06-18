@@ -219,7 +219,12 @@ class CharacterController extends Controller
 
         if (!is_null($avatar) && count($validationErrors) == 0) {
             $errorCount = count($validationErrors);
-            $filename = $this->parseUpload($avatar, $validationErrors);
+
+            $offsetX = input('crop-x');
+            $offsetY = input('crop-y');
+            $cropAreaWidth = input('crop-width');
+
+            $filename = $this->parseUpload($avatar, $validationErrors, $offsetX, $offsetY, $cropAreaWidth);
 
             if (!is_null($filename)) {                
                 $oldAvatar = $char->character_avatar;
@@ -282,8 +287,13 @@ class CharacterController extends Controller
      * @param array $validationErrors
      * @return string|null
      */
-    private function parseUpload(InputFile $avatar, array &$validationErrors) : ?string
+    private function parseUpload(InputFile $avatar, array &$validationErrors, $offsetX, $offsetY, $cropAreaWidth) : ?string
     {
+        $autoCrop = false;
+        if(!is_numeric($offsetX) || $offsetX < 0 || !is_numeric($offsetY) || $offsetY < 0 || !is_numeric($cropAreaWidth) || $cropAreaWidth < 0) {
+            $autoCrop = true;
+        }
+
         $imageInfo = null;
         $imageSize = null;
         try {
@@ -308,6 +318,12 @@ class CharacterController extends Controller
             return null;
         }
 
+        if (!$autoCrop) {
+            if ($offsetX + $cropAreaWidth > $width || $offsetY + $cropAreaWidth > $height) {
+                $autoCrop = true;
+            }
+        }
+
         $image = imagecreatefromstring(file_get_contents($avatar->getTmpName()));
 
         $ext = 'jpg';
@@ -318,19 +334,31 @@ class CharacterController extends Controller
         }
 
         $cropX = 0;
+        $cropY = 0;
         $cropEnabled = false;
 
-        $outputWidth = $width;
-        $outputHeight = $height;
-        if ($width > $height) {
-            $cropX = (int)(floor(($width - $height) / 2));
-            $outputWidth = $height;
-            $cropEnabled = true;
-        } else if ($width != $height) {
-            $cropX = 0;
-            $cropEnabled = true;
-            $outputHeight = $width;
-        }        
+        if ($autoCrop) {
+            $outputWidth = $width;
+            $outputHeight = $height;
+            if ($width > $height) {
+                $cropX = (int)(floor(($width - $height) / 2));
+                $outputWidth = $height;
+                $cropEnabled = true;
+            } else if ($width != $height) {
+                $cropX = 0;
+                $cropEnabled = true;
+                $outputHeight = $width;
+            } 
+        } else {
+            $cropX = $offsetX;
+            $cropY = $offsetY;
+            $outputWidth = $cropAreaWidth;
+            $outputHeight = $cropAreaWidth;
+
+            if($cropX != 0 || $cropY != 0 || $outputWidth != $width || $outputHeight != $height) {
+                $cropEnabled = true;
+            }
+        }                       
 
         if ($image === false) {
             $validationErrors[] = 'Failed to crop the avatar image.';
@@ -347,7 +375,7 @@ class CharacterController extends Controller
                 $transparent = imagecolorallocatealpha($target, 255, 255, 255, 127);
                 imagefilledrectangle($target, 0, 0, self::AVATAR_SIZE, self::AVATAR_SIZE, $transparent);
             }
-            $rs = imagecopyresampled($target, $image, 0, 0, $cropX, 0, self::AVATAR_SIZE, self::AVATAR_SIZE, $outputWidth, $outputHeight);
+            $rs = imagecopyresampled($target, $image, 0, 0, $cropX, $cropY, self::AVATAR_SIZE, self::AVATAR_SIZE, $outputWidth, $outputHeight);
             $image = null;
             unset ($image);
             $image = $target;
